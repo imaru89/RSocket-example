@@ -8,6 +8,7 @@ import org.reactivestreams.Publisher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.MediaType;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.util.MimeTypeUtils;
@@ -59,5 +60,13 @@ public class ConsumerApplication {
 				.data(new GreetingsRequest(name))
 				.retrieveMono(GreetingsResponse.class);
 		}
+
+    @GetMapping(produces = MediaType.APPLICATION_STREAM_JSON_VALUE, path = "/greet/stream/{name}")
+    Publisher<GreetingsResponse> greetStream(@PathVariable String name){
+      return this.requester
+        .route("greet-stream")
+        .data(new GreetingsRequest(name))
+        .retrieveFlux(GreetingsResponse.class);
+    }
 	}
 }
